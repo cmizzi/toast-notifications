@@ -1,0 +1,18 @@
+{
+  "name": "toast-notifications",
+  "version": "0.0.1",
+  "authors": [
+    "Cyril Mizzi <cyril@lesiteimmo.com>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "devDependencies": {
+    "magic": "~1.1.0"
+  }
+}

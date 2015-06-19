@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Toast</title>
+	<meta charset="UTF-8">
+
+	<link href="../dist/css/toast.min.css" rel="stylesheet" />
+</head>
+<body>
+	<div class="notifications">
+		<p class="notify success">Dolor ex consectetur quae ad non. Amet nam earum dolore nisi sapiente quisquam earum. Deserunt tempora consequuntur ad dolore fuga itaque voluptates minima nobis corrupti! Esse molestiae nulla quidem rerum!</p>
+		<p class="notify error">An error occurred... Please try later!</p>
+	</div>
+	
+	<script src="../dist/js/toast.js"></script>
+	<script>
+		(function() {
+			// Setting up module
+			Toast.setOptions({ delay : 7 });
+
+			// Capture all static notifications into .notifications
+			Toast.guess(document.querySelector(".notifications"));
+
+			// Generate some notifications on the fly
+			setTimeout(function() {
+				new Toast("info", "test");
+			}, 1000);
+
+			setTimeout(function() {
+				new Toast("alert", "test");
+			}, 2000);
+
+			setTimeout(function() {
+				new Toast("success", "test");
+			}, 3000);
+
+			setTimeout(function() {
+				new Toast("warning", "test");
+			}, 3200);
+		})();
+	</script>
+</body>
+</html>
