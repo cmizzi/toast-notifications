@@ -97,7 +97,7 @@ window.Toast = class Toast
 		setTimeout ->
 			current = new Date()
 
-			if current.getSeconds() >= that.notify.timer.getSeconds()
+			if current >= that.notify.timer
 				# Add effect on hide and return to avoid empty timeout
 				if not that.notify.classList.contains "ondeHide"
 					that.notify.classList.remove that.getOption "onShow"
@@ -115,14 +115,15 @@ window.Toast = class Toast
 				# Let's calculate the width timelife
 				timelife = that.notify.querySelector ".toasts-timelife"
 				width    = timelife.clientWidth
-	
-				from  = current.getSeconds()
-				to    = that.notify.timer.getSeconds()
 
-				delta = Math.max(from, to) - Math.min(from, to)
-				delta = width / Math.abs delta
-	
-				timelife.style.width = "#{width - delta}px"
+				delta = current - that.notify.timer
+
+				delta = Math.abs delta
+				delta = delta / 1000
+				delta = Math.round delta
+
+				width = width - (width / delta)
+				timelife.style.width = "#{width}px"
 
 			that.remove()
 

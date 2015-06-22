@@ -115,9 +115,9 @@
       that = this;
       hidden = false;
       return setTimeout(function() {
-        var current, delta, from, timelife, to, width;
+        var current, delta, timelife, width;
         current = new Date();
-        if (current.getSeconds() >= that.notify.timer.getSeconds()) {
+        if (current >= that.notify.timer) {
           if (!that.notify.classList.contains("ondeHide")) {
             that.notify.classList.remove(that.getOption("onShow"));
             that.notify.classList.add(that.getOption("onHide"));
@@ -133,11 +133,12 @@
         if (that.getOption("timelife")) {
           timelife = that.notify.querySelector(".toasts-timelife");
           width = timelife.clientWidth;
-          from = current.getSeconds();
-          to = that.notify.timer.getSeconds();
-          delta = Math.max(from, to) - Math.min(from, to);
-          delta = width / Math.abs(delta);
-          timelife.style.width = (width - delta) + "px";
+          delta = current - that.notify.timer;
+          delta = Math.abs(delta);
+          delta = delta / 1000;
+          delta = Math.round(delta);
+          width = width - (width / delta);
+          timelife.style.width = width + "px";
         }
         return that.remove();
       }, 1000);
