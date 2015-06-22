@@ -41,10 +41,6 @@
     };
 
     function Toast(type, message) {
-      type = Toast.getType(type);
-      if (!type || !message) {
-        throw type + " unrecodnized";
-      }
       if (!Toast.container) {
         this.createContainer();
       }
@@ -71,14 +67,32 @@
       return Toast.options[name];
     };
 
+    Toast.prototype.setClasses = function(classes) {
+      var cls, i, j, len, len1, ref, results;
+      if (classes instanceof Object) {
+        for (i = 0, len = classes.length; i < len; i++) {
+          cls = classes[i];
+          this.notify.classList.add(cls);
+        }
+        return;
+      }
+      ref = classes.split(" ");
+      results = [];
+      for (j = 0, len1 = ref.length; j < len1; j++) {
+        cls = ref[j];
+        results.push(this.notify.classList.add(cls));
+      }
+      return results;
+    };
+
     Toast.prototype.notify = function(type, message) {
-      var timelife, timer;
+      var e, timelife, timer;
       this.notify = document.createElement("li");
       this.notify.classList.add("toasts-notify");
-      this.notify.classList.add(type);
       this.notify.classList.add("magictime");
       this.notify.classList.add(this.getOption("onShow"));
       this.notify.innerHTML = message;
+      this.setClasses(type);
       if (this.getOption("timelife")) {
         timelife = document.createElement("div");
         timelife.classList.add("toasts-timelife");
@@ -87,19 +101,33 @@
       timer = new Date();
       timer.setSeconds(timer.getSeconds() + this.getOption("delay"));
       this.notify.timer = timer;
-      Toast.container.appendChild(this.notify);
+      try {
+        Toast.container.insertBefore(this.notify, Toast.container.firstChild);
+      } catch (_error) {
+        e = _error;
+        Toast.container.appendChild(this.notify);
+      }
       return this.remove();
     };
 
     Toast.prototype.remove = function() {
-      var that;
+      var hidden, that;
       that = this;
+      hidden = false;
       return setTimeout(function() {
         var current, delta, from, timelife, to, width;
         current = new Date();
-        if (current.getSeconds() === that.notify.timer.getSeconds()) {
-          that.notify.classList.remove(that.getOption("onShow"));
-          that.notify.classList.add(that.getOption("onHide"));
+        if (current.getSeconds() >= that.notify.timer.getSeconds()) {
+          if (!that.notify.classList.contains("ondeHide")) {
+            that.notify.classList.remove(that.getOption("onShow"));
+            that.notify.classList.add(that.getOption("onHide"));
+          }
+          that.notify.addEventListener(that.checkAnimations(), function(event) {
+            if (event.animationName !== that.getOption("onHide")) {
+              return;
+            }
+            return that.notify.remove();
+          });
           return;
         }
         if (that.getOption("timelife")) {
@@ -115,18 +143,20 @@
       }, 1000);
     };
 
-    Toast.getType = function(classList) {
-      var i, len, type;
-      if (typeof classList === "string") {
-        classList = classList.split(" ");
-      }
-      for (i = 0, len = classList.length; i < len; i++) {
-        type = classList[i];
-        if (type.match(/^(info|success|error|alert|warning)$/)) {
-          return type;
+    Toast.prototype.checkAnimations = function() {
+      var animation, animations, label;
+      animations = {
+        'animation': 'animationend',
+        'OAnimation': 'oAnimationEnd',
+        'MozAnimation': 'animationend',
+        'WebkitAnimation': 'webkitAnimationEnd'
+      };
+      for (label in animations) {
+        animation = animations[label];
+        if (this.notify.style[label] !== void 0) {
+          return animation;
         }
       }
-      return null;
     };
 
     Toast.prototype.createContainer = function() {

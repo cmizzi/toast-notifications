@@ -33,10 +33,6 @@ window.Toast = class Toast
 		onHide   : "spaceOutUp"  # Effect on hide
 
 	constructor : (type, message) ->
-		# Try to find the related class
-		type = Toast.getType type
-		throw "#{type} unrecodnized" if not type or not message
-
 		# Create a container if doesn't exists
 		@createContainer() if not Toast.container
 
@@ -60,14 +56,21 @@ window.Toast = class Toast
 	getOption : (name) ->
 		return Toast.options[name]
 
+	setClasses : (classes) ->
+		if classes instanceof Object
+			@notify.classList.add cls for cls in classes
+			return
+
+		@notify.classList.add cls for cls in classes.split(" ")
+
 	notify : (type, message) ->
 		# Create notification element
 		@notify = document.createElement "li"
 		@notify.classList.add "toasts-notify"
-		@notify.classList.add type
 		@notify.classList.add "magictime"
 		@notify.classList.add @getOption "onShow"
 		@notify.innerHTML = message
+		@setClasses type
 
 		# If timelife option is true
 		if @getOption "timelife"
@@ -80,19 +83,32 @@ window.Toast = class Toast
 		timer.setSeconds timer.getSeconds() + @getOption "delay"
 		@notify.timer = timer
 
-		Toast.container.appendChild @notify
+		try
+			Toast.container.insertBefore @notify, Toast.container.firstChild
+		catch e
+			Toast.container.appendChild @notify
+
 		@remove()
 
 	remove : ->
-		that = @
+		that   = @
+		hidden = false
 
 		setTimeout ->
 			current = new Date()
 
-			if current.getSeconds() is that.notify.timer.getSeconds()
+			if current.getSeconds() >= that.notify.timer.getSeconds()
 				# Add effect on hide and return to avoid empty timeout
-				that.notify.classList.remove that.getOption "onShow"
-				that.notify.classList.add    that.getOption "onHide"
+				if not that.notify.classList.contains "ondeHide"
+					that.notify.classList.remove that.getOption "onShow"
+					that.notify.classList.add    that.getOption "onHide"
+
+				that.notify.addEventListener that.checkAnimations(), (event) ->
+					if event.animationName isnt that.getOption "onHide"
+						return
+
+					that.notify.remove()
+
 				return
 
 			if that.getOption "timelife"
@@ -113,13 +129,16 @@ window.Toast = class Toast
 		# As we work with seconds, update the status every second
 		, 1000
 
-	@getType : (classList) ->
-		classList = classList.split " " if typeof(classList) is "string"
+	checkAnimations : ->
+		animations =
+			'animation'       : 'animationend'
+			'OAnimation'      : 'oAnimationEnd'
+			'MozAnimation'    : 'animationend'
+			'WebkitAnimation' : 'webkitAnimationEnd'
 
-		for type in classList
-			return type if type.match /^(info|success|error|alert|warning)$/
-
-		return null
+		for label, animation of animations
+			if @notify.style[label] isnt undefined
+				return animation
 
 	createContainer : ->
 		# Create notifications container
