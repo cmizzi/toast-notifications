@@ -2257,7 +2257,7 @@ Copyright (c) 2014 Christian Pucci
 	position : absolute;
 	width    : 250px;
 	right    : 50px;
-	top      : 10px;
+	bottom   : 10px;
 }
 
 .toasts-container .toasts-notify {
