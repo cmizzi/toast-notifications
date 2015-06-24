@@ -4,6 +4,7 @@
   "authors": [
     "Cyril Mizzi <cyril@lesiteimmo.com>"
   ],
+  "main": "dist/js/toast.js",
   "license": "MIT",
   "ignore": [
     "**/.*",
