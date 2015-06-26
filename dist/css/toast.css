@@ -2315,7 +2315,6 @@ Copyright (c) 2014 Christian Pucci
   left     : 0;
   right    : 0;
   background : #607D8B;
-  border-radius : 0 0 2px 2px;
   -webkit-transition    : width 1s linear;
   transition    : width 1s linear;
 }

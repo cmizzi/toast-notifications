@@ -16,27 +16,8 @@
 	<script>
 		(function() {
 			// Setting up module
-			Toast.setOptions({ delay : 7 });
-
-			// Capture all static notifications into .notifications
-			Toast.guess(document.querySelector(".notifications"));
-
-			// Generate some notifications on the fly
-			setTimeout(function() {
-				new Toast("info", "test");
-			}, 1000);
-
-			setTimeout(function() {
-				new Toast("alert", "test");
-			}, 2000);
-
-			setTimeout(function() {
-				new Toast("success", "test");
-			}, 3000);
-
-			setTimeout(function() {
-				new Toast("warning", "test");
-			}, 3200);
+			Toast.setOptions({ delay : 10 });
+			new Toast("info", "test");
 		})();
 	</script>
 </body>
